@@ -1,0 +1,16 @@
+# Agent Skills 收录清单
+#
+# 在此显式列出要收录到导航页的 skill 仓库（GitHub 用户名/组织名下的仓库）。
+# 新增 skill 时：在下方 `repos:` 列表加一行，然后推送，Action 会自动重新生成 README。
+#
+# 说明：
+# - 每个条目对应一个「独立 skill 仓库」，脚本会递归扫描其中所有 `SKILL.md`。
+# - `owner`：仓库所属用户名或组织名（默认 blackkcold）。
+# - `branch`：默认分支（通常 main）。
+# - 由于 Action 使用默认 GITHUB_TOKEN，私有仓库无法被读取，请保持目标仓库为公开。
+
+owner: blackkcold
+
+repos:
+  - sdd-skill
+  - release-skill
