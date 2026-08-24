@@ -86,7 +86,7 @@ def deploy_block(owner, name, repo, skill_dir):
 def build_readme(owner, entries):
     rows = "\n".join(
         f"| [{repo}](https://github.com/{owner}/{repo}) | `{name}` | {desc} |"
-        for repo, name, desc in entries
+        for repo, name, skill_dir, desc in entries
     )
     sections = "\n".join(
         f"### {name} — `{repo}`\n\n{desc}\n\n{deploy_block(owner, name, repo, skill_dir)}\n"
