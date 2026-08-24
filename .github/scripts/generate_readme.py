@@ -40,8 +40,12 @@ def scan_skill_dirs(owner, repo, branch):
     dirs = set()
     for item in tree.get("tree", []):
         if item.get("type") == "blob" and item.get("path", "").endswith("SKILL.md"):
-            parent = item["path"].rsplit("/SKILL.md", 1)[0]
-            dirs.add(parent if parent else ROOT_MARKER)
+            path = item["path"]
+            if path == "SKILL.md":
+                dirs.add(ROOT_MARKER)
+            else:
+                parent = path.rsplit("/SKILL.md", 1)[0]
+                dirs.add(parent if parent else ROOT_MARKER)
     return sorted(dirs)
 
 
