@@ -7,6 +7,7 @@ import urllib.request
 from html import escape
 
 API = "https://api.github.com"
+ROOT_MARKER = "__ROOT__"
 
 
 def api_get(url):
@@ -39,7 +40,8 @@ def scan_skill_dirs(owner, repo, branch):
     dirs = set()
     for item in tree.get("tree", []):
         if item.get("type") == "blob" and item.get("path", "").endswith("SKILL.md"):
-            dirs.add(item["path"].rsplit("/SKILL.md", 1)[0])
+            parent = item["path"].rsplit("/SKILL.md", 1)[0]
+            dirs.add(parent if parent else ROOT_MARKER)
     return sorted(dirs)
 
 
@@ -48,42 +50,35 @@ def readme_first_line(owner, repo, branch):
         text = api_get_b64(f"{API}/repos/{owner}/{repo}/readme?ref={branch}")
         for line in text.splitlines():
             line = line.strip()
-            if line and not line.startswith("#"):
-                return line[:120]
+            if not line or line.startswith("#") or line.startswith("!["):
+                continue
+            return line[:120]
     except Exception:
         pass
     return ""
 
 
-def deploy_block(owner, name, repo):
+def deploy_block(owner, name, repo, skill_dir):
     clone_dir = f"/tmp/{repo}-install"
-    commands = {
-        "通用 (任意 harness，下载到当前目录)": (
-            f"git clone --depth 1 https://github.com/{owner}/{repo} {clone_dir} && \\\n"
-            f"cp -r {clone_dir}/{name} ./{name} && rm -rf {clone_dir}"
-        ),
-        "OpenCode": (
-            f"mkdir -p ~/.config/opencode/skills/{name} && \\\n"
-            f"git clone --depth 1 https://github.com/{owner}/{repo} {clone_dir} && \\\n"
-            f"cp -r {clone_dir}/{name}/* ~/.config/opencode/skills/{name}/ && \\\n"
-            f"rm -rf {clone_dir}"
-        ),
-        "Claude Code": (
-            f"mkdir -p ~/.claude/skills/{name} && \\\n"
-            f"git clone --depth 1 https://github.com/{owner}/{repo} {clone_dir} && \\\n"
-            f"cp -r {clone_dir}/{name}/* ~/.claude/skills/{name}/ && \\\n"
-            f"rm -rf {clone_dir}"
-        ),
-        "Codex CLI": (
-            f"mkdir -p ~/.codex/skills/{name} && \\\n"
-            f"git clone --depth 1 https://github.com/{owner}/{repo} {clone_dir} && \\\n"
-            f"cp -r {clone_dir}/{name}/* ~/.codex/skills/{name}/ && \\\n"
-            f"rm -rf {clone_dir}"
-        ),
+    src = clone_dir + (f"/{skill_dir}" if skill_dir else "")
+    targets = {
+        "通用 (任意 harness，下载到当前目录)": f"./{name}",
+        "OpenCode": f"~/.config/opencode/skills/{name}",
+        "Claude Code": f"~/.claude/skills/{name}",
+        "Codex CLI": f"~/.codex/skills/{name}",
     }
     parts = ["<details>", f"<summary><b>{escape(name)}</b> · 一键部署</summary>", ""]
-    for title, cmd in commands.items():
-        parts += [f"**{title}**", "", "```bash", cmd, "```", ""]
+    for title, target in targets.items():
+        parts += [
+            f"**{title}**",
+            "",
+            "```bash",
+            f"git clone --depth 1 https://github.com/{owner}/{repo} {clone_dir} && \\",
+            f"cp -r {src}/. {target} && \\",
+            f"rm -rf {clone_dir}",
+            "```",
+            "",
+        ]
     parts.append("</details>")
     return "\n".join(parts)
 
@@ -94,8 +89,8 @@ def build_readme(owner, entries):
         for repo, name, desc in entries
     )
     sections = "\n".join(
-        f"### {name} — `{repo}`\n\n{desc}\n\n{deploy_block(owner, name, repo)}\n"
-        for repo, name, desc in entries
+        f"### {name} — `{repo}`\n\n{desc}\n\n{deploy_block(owner, name, repo, skill_dir)}\n"
+        for repo, name, skill_dir, desc in entries
     )
     return f"""# Agent Skills
 
@@ -133,8 +128,12 @@ def main():
                 print(f"skip {repo}: no SKILL.md found")
                 continue
             desc = readme_first_line(owner, repo, branch)
-            name = dirs[0] if len(dirs) == 1 else repo
-            entries.append((repo, name, desc))
+            if len(dirs) == 1:
+                skill_dir = "" if dirs[0] == ROOT_MARKER else dirs[0]
+                name = repo if skill_dir == "" else dirs[0]
+            else:
+                skill_dir, name = "", repo
+            entries.append((repo, name, skill_dir, desc))
         except Exception as exc:
             print(f"skip {repo}: {exc}")
     if not entries:
