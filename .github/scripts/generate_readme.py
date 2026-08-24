@@ -114,7 +114,7 @@ def build_readme(owner, entries):
 
 
 def main():
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     owner, repos = load_config(root)
     if not repos:
         sys.exit("skills.yml 中没有可扫描的仓库")
