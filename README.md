@@ -10,7 +10,6 @@
 |---|---|---|
 | [sdd-skill](https://github.com/blackkcold/sdd-skill) | `sdd` | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) |
 | [release-skill](https://github.com/blackkcold/release-skill) | `release` | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) |
-| [public-figure-research](https://github.com/blackkcold/public-figure-research) | `public-figure-research` | 通用公众人物调研 Skill —— 查询微博/抖音/小红书/B站四平台粉丝量，输出结构化 CSV 与标准报告，支持多领域（手机/3C、汽车、美妆等）。 |
 
 ## 详情与一键部署
 
@@ -92,47 +91,6 @@ rm -rf /tmp/release-skill-install
 git clone --depth 1 https://github.com/blackkcold/release-skill /tmp/release-skill-install && \
 cp -r /tmp/release-skill-install/release/. ~/.codex/skills/release && \
 rm -rf /tmp/release-skill-install
-```
-
-</details>
-
-### public-figure-research — `public-figure-research`
-
-通用公众人物调研 Skill —— 查询微博/抖音/小红书/B站四平台粉丝量，输出结构化 CSV 与标准报告，支持多领域（手机/3C、汽车、美妆等）。
-
-<details>
-<summary><b>public-figure-research</b> · 一键部署</summary>
-
-**通用 (任意 harness，下载到当前目录)**
-
-```bash
-git clone --depth 1 https://github.com/blackkcold/public-figure-research /tmp/public-figure-research-install && \
-cp -r /tmp/public-figure-research-install/. ./public-figure-research && \
-rm -rf /tmp/public-figure-research-install
-```
-
-**OpenCode**
-
-```bash
-git clone --depth 1 https://github.com/blackkcold/public-figure-research /tmp/public-figure-research-install && \
-cp -r /tmp/public-figure-research-install/. ~/.config/opencode/skills/public-figure-research && \
-rm -rf /tmp/public-figure-research-install
-```
-
-**Claude Code**
-
-```bash
-git clone --depth 1 https://github.com/blackkcold/public-figure-research /tmp/public-figure-research-install && \
-cp -r /tmp/public-figure-research-install/. ~/.claude/skills/public-figure-research && \
-rm -rf /tmp/public-figure-research-install
-```
-
-**Codex CLI**
-
-```bash
-git clone --depth 1 https://github.com/blackkcold/public-figure-research /tmp/public-figure-research-install && \
-cp -r /tmp/public-figure-research-install/. ~/.codex/skills/public-figure-research && \
-rm -rf /tmp/public-figure-research-install
 ```
 
 </details>
